@@ -1,9 +1,11 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const cookieParser = require("cookie-parser");
 
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors());
 
 const db = require('./models');
@@ -13,8 +15,9 @@ app.use('/user',userRouter);
 const expenseRouter = require('./routes/Expense');
 app.use('/expense',expenseRouter);
 
+
 db.sequelize.sync().then(()=>{
     app.listen(3001, ()=>{
     console.log('server is running on port 3001');
 });
-}); 
+});  
