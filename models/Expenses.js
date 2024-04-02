@@ -13,5 +13,10 @@ module.exports = (sequelize,Datatype)=>{
             allowNull:false,
         },
     });
+    Expenses.associate = (models)=>{
+        Expenses.belongsTo(models.User,{
+            onDelete:"cascade",
+        });
+    };
     return Expenses;
 }

@@ -13,9 +13,16 @@ module.exports = (sequelize,DataTypes)=>{
             type: DataTypes.STRING,
             allowNull: false,
         },
+        isPremium: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+        },
     });
     User.associate = (models)=>{
         User.hasMany(models.Expenses,{
+            onDelete: "cascade",
+        });
+        User.hasMany(models.Orders,{
             onDelete: "cascade",
         });
     };

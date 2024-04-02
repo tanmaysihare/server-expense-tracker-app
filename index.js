@@ -2,9 +2,10 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const cookieParser = require("cookie-parser");
-
+require('dotenv').config();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended:false }));
 app.use(cookieParser());
 app.use(cors());
 
@@ -14,6 +15,9 @@ const userRouter = require('./routes/User');
 app.use('/user',userRouter);
 const expenseRouter = require('./routes/Expense');
 app.use('/expense',expenseRouter);
+const purchaseRouter = require('./routes/Purchase');
+app.use('/orders',purchaseRouter);
+
 
 
 db.sequelize.sync().then(()=>{

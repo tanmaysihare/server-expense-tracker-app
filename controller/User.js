@@ -40,10 +40,9 @@ exports.postLogin2 = async (req, res) => {
       }
     } 
       const accessToken = createTokens(user);
-    
       res
         .status(200)
-        .json({ success: true, message: "User logged in successfully", authenticate:accessToken });
+        .json({ success: true, message: "User logged in successfully", authenticate:accessToken, isPremium: user.isPremium });
     
   } catch (error) {
     console.error("Error logging in user:", error);
