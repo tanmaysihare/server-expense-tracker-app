@@ -17,7 +17,8 @@ const expenseRouter = require('./routes/Expense');
 app.use('/expense',expenseRouter);
 const purchaseRouter = require('./routes/Purchase');
 app.use('/orders',purchaseRouter);
-
+const LeaderBoardRouter = require('./routes/LeaderBoard');
+app.use('/leader_board',LeaderBoardRouter);
 
 
 db.sequelize.sync().then(()=>{
