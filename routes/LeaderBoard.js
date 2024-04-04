@@ -3,6 +3,6 @@ const router = express.Router();
 const leaderBoardController = require('../controller/LeaderBoard');
 const {validateToken} = require("../middleware/tokken");
 
-router.get('/premium',leaderBoardController.getLeaderBoard);
-router.get('/non-premium',leaderBoardController.getLeaderBoard2);
+router.get('/premium',validateToken,leaderBoardController.getLeaderBoard);
+router.get('/non-premium',validateToken,leaderBoardController.getLeaderBoard2);
 module.exports = router;

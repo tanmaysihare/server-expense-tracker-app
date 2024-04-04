@@ -67,8 +67,8 @@ exports.getLeaderBoard = async (req, res) => {
              userName,
             totalExpense,
         }));
-
-        res.json(aggregatedExpenses);
+        const sortedExpenses = aggregatedExpenses.sort((a, b) => b.totalExpense - a.totalExpense);
+        res.json(sortedExpenses);
     } catch (error) {
         console.error("Error in getUserExpenses:", error);
         res.status(500).json({ error: 'Internal server error' });
@@ -123,8 +123,8 @@ exports.getLeaderBoard2 = async(req,res)=>{
              userName,
             totalExpense,
         }));
-
-        res.json(aggregatedExpenses);
+        const sortedExpenses = aggregatedExpenses.sort((a, b) => b.totalExpense - a.totalExpense);
+        res.json(sortedExpenses);
     } catch (error) {
         console.error("Error in getUserExpenses:", error);
         res.status(500).json({ error: 'Internal server error' });
