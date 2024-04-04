@@ -1,10 +1,10 @@
-const {Orders} = require("../models");
-const {User} = require("../models");
+const {Orders,User,sequelize} = require("../models");
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
 exports.purchasePremium =  async (req,res)=>{
-  const userId = req.user.id;
+  try{
+     const userId = req.user.id;
   const userName = req.user.name;
   const userEmail = req.user.email;
     var razorpay = new Razorpay({
@@ -25,20 +25,34 @@ exports.purchasePremium =  async (req,res)=>{
      
         console.log(order); 
       });
+  }catch(error){
+  
+    res.status(500).json({error: 'Internal server error'});
+  }
+ 
 }
 
 exports.update_transaction_status = async(req, res) =>{
-  const verification = req.body;
+  let transaction;
+  try{
+     transaction = await sequelize.transaction();
+     const verification = req.body;
   const body_data = verification.razorpay_order_id + "|" + verification.razorpay_payment_id;
  const newBody_data = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET).update(body_data).digest('hex')
   const isValid = newBody_data === verification.razorpay_signature;
   if(isValid){
     res.redirect('http://localhost:3000/homepage');
-    Orders.update({status:"paid",paymentId:verification.razorpay_payment_id},{where:{orderId:verification.razorpay_order_id}});
-    User.update({isPremium:true},{where:{id:req.user.id}});
+    Orders.update({status:"paid",paymentId:verification.razorpay_payment_id},{where:{orderId:verification.razorpay_order_id},transaction});
+    User.update({isPremium:true},{where:{id:req.user.id},transaction});
+    await transaction.commit();
     return
   }else{
     res.status(400).json({error:"Invalid Signature"});
     return
   }
+  }catch(error){
+    if(transaction) await transaction.rollback();
+    res.status(500).json({error: 'Internal server error'});
+  }
+ 
 }                                            

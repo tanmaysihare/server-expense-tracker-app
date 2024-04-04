@@ -1,6 +1,6 @@
 const {User} = require("../models");
 const {Expenses} = require("../models");
-
+const {sequelize} = require("../models");
 exports.getLeaderBoard = async (req, res) => {
     // try {
     //     // Find all users with premium memberships
@@ -38,7 +38,9 @@ exports.getLeaderBoard = async (req, res) => {
     //     console.error("Error in getLeaderBoard:", error);
     //     res.status(500).json({ error: 'Internal server error' });
     // }
+    let transaction;
     try {
+        transaction = await sequelize.transaction();
         // Find all expenses including associated user information
         const userExpenses = await Expenses.findAll({
             include: [
@@ -47,7 +49,8 @@ exports.getLeaderBoard = async (req, res) => {
                     required: true,
                 where:{isPremium:true}
             }
-        ]
+        ],
+            transaction,
         });
 
         // Aggregate expenses by user ID and calculate total expenses
@@ -68,8 +71,10 @@ exports.getLeaderBoard = async (req, res) => {
             totalExpense,
         }));
         const sortedExpenses = aggregatedExpenses.sort((a, b) => b.totalExpense - a.totalExpense);
+       await transaction.commit();
         res.json(sortedExpenses);
     } catch (error) {
+        if(transaction) await transaction.rollback();
         console.error("Error in getUserExpenses:", error);
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -99,11 +104,13 @@ exports.getLeaderBoard2 = async(req,res)=>{
     //     res.status(500).json({error: 'Internal server error'});
     // }
 
-    
+    let transaction;
     try {
+        transaction = await sequelize.transaction();
         // Find all expenses including associated user information
         const userExpenses = await Expenses.findAll({
             include: [{ model: User }],
+            transaction,
         });
 
         // Aggregate expenses by user ID and calculate total expenses
@@ -124,8 +131,10 @@ exports.getLeaderBoard2 = async(req,res)=>{
             totalExpense,
         }));
         const sortedExpenses = aggregatedExpenses.sort((a, b) => b.totalExpense - a.totalExpense);
+        await transaction.commit();
         res.json(sortedExpenses);
     } catch (error) {
+        if(transaction) await transaction.rollback();
         console.error("Error in getUserExpenses:", error);
         res.status(500).json({ error: 'Internal server error' });
     }
