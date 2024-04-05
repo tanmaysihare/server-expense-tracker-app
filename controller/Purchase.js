@@ -33,26 +33,41 @@ exports.purchasePremium =  async (req,res)=>{
 }
 
 exports.update_transaction_status = async(req, res) =>{
-  let transaction;
   try{
-     transaction = await sequelize.transaction();
      const verification = req.body;
   const body_data = verification.razorpay_order_id + "|" + verification.razorpay_payment_id;
  const newBody_data = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET).update(body_data).digest('hex')
   const isValid = newBody_data === verification.razorpay_signature;
   if(isValid){
+    Orders.update({status:"paid",paymentId:verification.razorpay_payment_id},{where:{orderId:verification.razorpay_order_id}});
+    User.update({isPremium:true},{where:{id:req.user.id}});
     res.redirect('http://localhost:3000/homepage');
-    Orders.update({status:"paid",paymentId:verification.razorpay_payment_id},{where:{orderId:verification.razorpay_order_id},transaction});
-    User.update({isPremium:true},{where:{id:req.user.id},transaction});
-    await transaction.commit();
     return
   }else{
     res.status(400).json({error:"Invalid Signature"});
     return
   }
   }catch(error){
-    if(transaction) await transaction.rollback();
+    
     res.status(500).json({error: 'Internal server error'});
   }
  
-}                                            
+}  
+
+exports.getStatus = async(req,res)=>{
+      let transaction;
+    try{
+      transaction = await sequelize.transaction();
+      const premiumStatus = await User.findOne({where:{id:req.user.id},transaction});
+      if(premiumStatus.isPremium){
+        await transaction.commit();
+        res.status(200).json({status:true,isPremium:premiumStatus.isPremium,message:"User is Premium"});
+      }else{
+        await transaction.commit();
+        res.status(200).json({status:false,isPremium:premiumStatus.isPremium,message:"User is not Premium"});
+      }
+}catch(error){
+  if(transaction) await transaction.rollback();
+  res.status(500).json({error: 'Internal server error'});
+}
+}

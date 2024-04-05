@@ -19,7 +19,8 @@ const purchaseRouter = require('./routes/Purchase');
 app.use('/orders',purchaseRouter);
 const LeaderBoardRouter = require('./routes/LeaderBoard');
 app.use('/leader_board',LeaderBoardRouter);
-
+const ForgetPasswordRouter = require('./routes/ForgetPassword');
+app.use('/password',ForgetPasswordRouter);
 
 db.sequelize.sync().then(()=>{
     app.listen(3001, ()=>{

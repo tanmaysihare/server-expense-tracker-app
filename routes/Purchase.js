@@ -10,4 +10,6 @@ router.get('/premium_membership',validateToken,purchaseController.purchasePremiu
 
 router.post('/update_transaction_status',validateToken,purchaseController.update_transaction_status);
 
+router.get('/transaction_status',validateToken,purchaseController.getStatus);
+
 module.exports = router;
