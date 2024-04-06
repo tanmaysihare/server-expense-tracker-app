@@ -6,7 +6,7 @@ exports.postExpense = async (req,res)=>{
         transaction = await sequelize.transaction();
 
         const userId = req.user.id;
-        console.log("userId", userId)
+    
         const expenseData = req.body;
         expenseData.UserId = userId;
         const newData = await Expenses.create(expenseData,{transaction});
