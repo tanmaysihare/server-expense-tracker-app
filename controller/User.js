@@ -38,14 +38,13 @@ exports.postLogin2 = async (req, res) => {
     const user = await User.findOne({ where: { email }, transaction });
 
     if (!user) {
-      res.status(400).json({ error: "User does not exist" });
+    return  res.status(400).json({ error: "User does not exist" });
     }
-    if (password) {
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         return res.status(400).json({ error: "incorrect password" });
       }
-    } 
+    
       const accessToken = createTokens(user);
       await transaction.commit();
       res

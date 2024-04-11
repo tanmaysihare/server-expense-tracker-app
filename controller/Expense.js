@@ -23,7 +23,7 @@ exports.getExpense = async(req,res)=>{
     try{
         transaction = await sequelize.transaction();
         const userId = req.user.id;
-        const expenses = await Expenses.findAll({where:{UserId:userId},transaction});
+        const expenses = await Expenses.findAll({where:{UserId:userId},order:[['createdAt','DESC']],transaction});
         await transaction.commit();
         res.json(expenses);
     }catch(error){

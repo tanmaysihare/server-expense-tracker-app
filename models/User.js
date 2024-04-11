@@ -28,6 +28,9 @@ module.exports = (sequelize,DataTypes)=>{
         User.hasMany(models.ForgetPasswordRequests,{
             onDelete: "cascade",
         });
+        User.hasMany(models.DownloadLinks,{
+            onDelete: "cascade",
+        });
     };
     return User;
 }; 
